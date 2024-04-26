@@ -1,17 +1,22 @@
 import AccountProfile from "@/components/forms/AccountProfile";
+import { fetchUser } from "@/lib/actions/user.action";
 import User from "@/lib/models/user.model";
 import { connectToDB } from "@/lib/mongoose";
 import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import React from "react";
 
 const Onboarding = async () => {
   const user = await currentUser();
+  const userInfo = await fetchUser(user?.id as string);
+  if (userInfo?.onboardedStatus) redirect("/");
   const userData = {
     id: user?.id || "",
-    username: user?.username || "",
-    name: user?.firstName || "",
-    bio: "",
-    image: user?.imageUrl || "",
+    // objectId: userInfo ? userInfo._id : "",
+    username: userInfo ? userInfo?.username : user?.username || "",
+    name: userInfo ? userInfo?.name : user?.firstName || "",
+    bio: userInfo ? userInfo.bio : "",
+    image: userInfo ? userInfo?.image : user?.imageUrl || "",
   };
   return (
     <main className="mx-auto flex max-w-3xl flex-col justify-start px-10 py-20">
