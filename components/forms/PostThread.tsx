@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { threadValidation } from "@/lib/validation/thread";
 import { createThread } from "@/lib/actions/thread.action";
 import { useOrganization } from "@clerk/nextjs";
+import { useTransition } from "react";
 // import { updateUser } from "@/lib/actions/user.action";
 interface Props {
   user: {
@@ -33,6 +34,7 @@ interface Props {
 }
 
 const PostThread = ({ userId }: { userId: string }) => {
+  const [pending, startTransition] = useTransition();
   const pathname = usePathname();
   const router = useRouter();
   const { organization } = useOrganization();
@@ -46,14 +48,16 @@ const PostThread = ({ userId }: { userId: string }) => {
   });
 
   const onSubmit = async (values: z.infer<typeof threadValidation>) => {
-    await createThread({
-      text: values.thread,
-      author: JSON.parse(userId),
-      communityId: organization ? organization.id : "",
-      path: pathname,
-    });
+    startTransition(async () => {
+      await createThread({
+        text: values.thread,
+        author: JSON.parse(userId),
+        communityId: organization ? organization.id : "",
+        path: pathname,
+      });
 
-    router.push("/");
+      router.push("/");
+    });
   };
   return (
     <Form {...form}>
@@ -77,7 +81,7 @@ const PostThread = ({ userId }: { userId: string }) => {
           )}
         />
 
-        <Button type="submit">Post Thread</Button>
+        <Button type="submit">{pending ? "Posting..." : "Post"}</Button>
       </form>
     </Form>
   );
