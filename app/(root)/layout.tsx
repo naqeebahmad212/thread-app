@@ -21,9 +21,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const user = await currentUser();
-  // const userInfo = await fetchUser(user?.id as string);
-
   return (
     <html lang="en">
       <ClerkProvider>
@@ -31,7 +28,7 @@ export default async function RootLayout({
           <Topbar />
 
           <main className="flex flex-row">
-            <LeftSidebar userId={""} />
+            <LeftSidebar />
 
             <section className="main-container">
               <div className="w-full max-w-4xl">{children}</div>
