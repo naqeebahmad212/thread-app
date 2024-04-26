@@ -62,12 +62,14 @@ export async function createThread({ text, author, communityId, path }: Params
 
     const communityIdObject = await Community.findOne(
       { id: communityId },
+      { _id: 1 }
     );
+
 
     const createdThread = await Thread.create({
       text,
       author,
-      community: communityIdObject._id, // Assign communityId if provided, or leave it null for personal account
+      community: communityIdObject, // Assign communityId if provided, or leave it null for personal account
     });
 
     // Update User model
