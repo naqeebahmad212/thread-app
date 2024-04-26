@@ -1,7 +1,7 @@
-import { fetchUserPosts } from "@/lib/actions/thread.action";
 import { redirect } from "next/navigation";
 import React from "react";
 import ThreadCard from "../cards/ThreadCard";
+import { fetchUserPosts } from "@/lib/actions/user.action";
 
 const ThreadsTab = async ({
   currentUserId,

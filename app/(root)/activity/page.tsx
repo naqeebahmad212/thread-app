@@ -6,11 +6,11 @@ import { redirect } from "next/navigation";
 import React from "react";
 const Page = async () => {
   const user = await currentUser();
-  if (!user) return null;
+  if (!user) redirect("/sign-in");
   const userInfo = await fetchUser(user?.id as string);
+  if (!userInfo || !userInfo.onboardedStatus) redirect("/onboarding");
 
   const activities = await getActivities(userInfo._id as string);
-  if (!userInfo || !userInfo.onboardedStatus) redirect("/onboarding");
   return (
     <section>
       <h1 className="head-text mb-10">Activity</h1>
