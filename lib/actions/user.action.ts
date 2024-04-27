@@ -158,8 +158,18 @@ export const getActivities=async(userId:string)=> {
 
         const replies= await Thread.find({_id: {$in: childrenThreadIds} , author:{$ne:userId}})
         .populate({path: 'author', model: 'User' , select:'_id   image name'})
+    
 
-        return replies
+        const likedThread= await Thread.find({author:userId },{likes:1}).populate({path:'likes',
+            populate:{
+                path:'user',
+                model:'User',
+                select:'_id   image name'
+            }
+        })
+        
+
+        return {replies,likedThread}
 
     } catch (error:any) {
         throw new Error(`Failed to get activities: ${error?.message}`)

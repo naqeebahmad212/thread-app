@@ -1,7 +1,12 @@
 import { formatDateString } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
+import DeleteThread from "../forms/DeleteThread";
+import { addLikeToThread } from "@/lib/actions/thread.action";
+import Like from "../Like";
+import { fetchUser } from "@/lib/actions/user.action";
 
 interface ThreadCardProps {
   id: string;
@@ -27,9 +32,14 @@ interface ThreadCardProps {
   }[];
   isComment?: boolean;
   className?: string;
+  path?: string;
+  likes: {
+    user: string;
+    thread: string;
+  }[];
 }
 
-const ThreadCard = ({
+const ThreadCard = async ({
   id,
   currentUserId,
   parentId,
@@ -40,7 +50,21 @@ const ThreadCard = ({
   comments,
   isComment,
   className,
+  path,
+  likes,
 }: ThreadCardProps) => {
+  const userInfo = await fetchUser(currentUserId);
+  let isLiked = false;
+  let isOnboarded = false;
+  if (userInfo) {
+    likes.forEach((like) => {
+      if (JSON.stringify(like.user) === JSON.stringify(userInfo._id)) {
+        isLiked = true;
+      }
+    });
+  }
+  if (userInfo) isOnboarded = userInfo?.onboardedStatus;
+
   return (
     <article
       className={`${className}  flex w-full flex-col  rounded-xl ${
@@ -74,12 +98,11 @@ const ThreadCard = ({
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
             <div className="mt-5 flex flex-col gap-3">
               <div className="flex gap-3.5">
-                <Image
-                  src="/assets/heart-gray.svg"
-                  alt="like"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
+                <Like
+                  id={id}
+                  currentUserId={currentUserId}
+                  isLiked={isLiked}
+                  isOnboarded={isOnboarded}
                 />
 
                 <Link href={`/thread/${id}`}>
@@ -108,17 +131,26 @@ const ThreadCard = ({
                   className="cursor-pointer object-contain"
                 />
               </div>
-
-              {isComment && comments.length > 0 && (
-                <Link href={`/thread/${id}`}>
-                  <p className="mt-1 text-subtle-medium text-gray-1">
-                    {comments.length} replies
-                  </p>
-                </Link>
-              )}
+              <div className="flex items-center gap-3 text-subtle-medium text-gray-1 ">
+                {likes.length > 0 && (
+                  <p className="mt-1">{likes.length} Likes</p>
+                )}
+                {comments.length > 0 && (
+                  <p className="mt-1 ">{comments.length} replies</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
+
+        <DeleteThread
+          threadId={JSON.stringify(id)}
+          currentUserId={currentUserId}
+          authorId={author.id}
+          parentId={parentId}
+          isComment={isComment}
+        />
+
         {/* {to do delete thread} */}
         {/* {to do comment logos} */}
       </div>

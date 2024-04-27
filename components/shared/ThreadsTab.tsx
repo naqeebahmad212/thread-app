@@ -30,6 +30,7 @@ const ThreadsTab = async ({
             currentUserId={currentUserId}
             parentId={post.parentId}
             content={post.text}
+            likes={post.likes}
             author={
               accountType === "User"
                 ? { name: result.name, image: result.image, id: result.id }

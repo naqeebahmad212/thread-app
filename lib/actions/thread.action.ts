@@ -239,3 +239,27 @@ export async function addCommentToThread(
     throw new Error("Unable to add comment");
   }
 }
+
+// likes feature or thread updating
+
+export async function addLikeToThread(threadId: string, currentUserId: string, path:string) {
+  try {
+    connectToDB();
+    const user = await User.findOne({id: currentUserId})
+    
+    const thread= await Thread.findById(threadId)
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    const isAlreadyLiked=thread.likes.find((like:any)=>like.user.toString()===user._id.toString())
+    if(!isAlreadyLiked){
+      thread.likes.push({user:user._id , threadId:thread._id})
+      await thread.save()
+    }
+    revalidatePath(path)
+  } catch (error) {
+    throw new Error(`Failed to add like to thread: ${error}`);
+    
+  }
+}

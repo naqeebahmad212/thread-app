@@ -15,13 +15,13 @@ const Page = async () => {
     <section>
       <h1 className="head-text mb-10">Activity</h1>
       <section className="mt-10 flex flex-col gap-5">
-        {(await activities).length > 0 ? (
+        {(await activities.replies).length > 0 ? (
           <>
-            {activities.map((activity: any) => (
-              <Link key={activity._id} href={`/thread/${activity.parentId}`}>
+            {activities.replies.map((reply: any) => (
+              <Link key={reply._id} href={`/thread/${reply.parentId}`}>
                 <article className="activity-card">
                   <Image
-                    src={activity.author.image}
+                    src={reply.author.image}
                     alt={"profile image"}
                     width={20}
                     height={20}
@@ -29,7 +29,7 @@ const Page = async () => {
                   />
                   <p className="!text-small-regular text-light-1">
                     <span className="mr-1 text-primary-500">
-                      {activity.author.name}
+                      {reply.author.name}
                     </span>{" "}
                     {""}
                     replied to your thread
@@ -37,6 +37,29 @@ const Page = async () => {
                 </article>
               </Link>
             ))}
+
+            {activities.likedThread.map((thread: any) =>
+              thread.likes.map((like: any) => (
+                <Link key={like._id} href={`/thread/${like.threadId}`}>
+                  <article className="activity-card">
+                    <Image
+                      src={like.user.image}
+                      alt={"profile image"}
+                      width={20}
+                      height={20}
+                      className="rounded-full object-cover overflow-hidden"
+                    />
+                    <p className="!text-small-regular text-light-1">
+                      <span className="mr-1 text-primary-500">
+                        {like.user.name}
+                      </span>{" "}
+                      {""}
+                      liked your thread
+                    </p>
+                  </article>
+                </Link>
+              ))
+            )}
           </>
         ) : (
           <p className="!text-base-regular text-light-3"> No activity yet</p>

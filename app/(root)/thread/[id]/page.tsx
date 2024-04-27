@@ -26,6 +26,7 @@ const ThreadDetailsPage = async ({ params }: { params: { id: string } }) => {
           community={post.community}
           createdAt={post.createdAt}
           comments={post.children}
+          likes={post.likes}
         />
       </div>
       <div className="mt-7">
@@ -49,7 +50,8 @@ const ThreadDetailsPage = async ({ params }: { params: { id: string } }) => {
               community={comment.community}
               createdAt={comment.createdAt}
               comments={comment.children}
-              isComment
+              likes={comment.likes}
+              isComment={true}
               className="mt-7"
             />
           ))}
